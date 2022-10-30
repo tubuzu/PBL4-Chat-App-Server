@@ -3,22 +3,23 @@ const bcrypt = require("bcryptjs");
 
 const userSchema = mongoose.Schema(
   {
-    username: { type: "String", required: true },
-    email: { type: "String", unique: true, required: true },
-    password: { type: "String", required: true },
+    username: { type: String, required: true },
+    firstname: { type: String, required: true },
+    lastname: { type: String, required: true },
+    email: { type: String, unique: true, required: true },
+    password: { type: String, required: true },
     avatar: {
-      type: "String",
-      required: true,
-      default:
-        "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
+      url: { type: String, trim: true },
+      cloudId: { type: String, trim: true }
     },
-    // isAdmin: {
-    //   type: Boolean,
-    //   required: true,
-    //   default: false,
-    // },
+    background: {
+      url: { type: String, trim: true },
+      cloudId: { type: String, trim: true }
+    },
+    about: { type: String },
+    statusMessage: { type: String },
   },
-  { timestaps: true }
+  { timestamps: true }
 );
 
 userSchema.methods.matchPassword = async function (enteredPassword) {

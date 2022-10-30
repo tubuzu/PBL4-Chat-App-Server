@@ -1,10 +1,10 @@
 const mongoose = require("mongoose");
 
-const messageSchema = mongoose.Schema(
+const groupMessageSchema = mongoose.Schema(
   {
     sender: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     content: { type: String, trim: true },
-    conversation: { type: mongoose.Schema.Types.ObjectId, ref: "Conversation" },
+    group: { type: mongoose.Schema.Types.ObjectId, ref: "Group" },
     attachments: [{
       url: { type: String, trim: true },
       cloudId: { type: String, trim: true }
@@ -13,5 +13,5 @@ const messageSchema = mongoose.Schema(
   { timestamps: true }
 );
 
-const Message = mongoose.model("Message", messageSchema);
-module.exports = Message;
+const GroupMessage = mongoose.model("GroupMessage", groupMessageSchema);
+module.exports = GroupMessage;
