@@ -35,22 +35,26 @@ const getMessagesByConversationId = asyncHandler(async (req, res) => {
 const sendConversationMessage = asyncHandler(async (req, res) => {
   const { content, id } = req.body;
 
-  if ((!content && !req.files.length) || !id) {
+  if ((!content && !req.files.attachments) || !id) {
     throw new BadRequestError("Invalid data passed into request");
   }
 
   const conversationExist = Conversation.findOne({ _id: id });
   if (!conversationExist) throw new NotFoundError('Conversation not found!');
 
-  const attachments = await Promise.all(req.files.map(async (file) => {
-    // Upload image to cloudinary
-    const result = await cloudinary.uploader.upload(file.path);
-    console.log(result);
-    return {
-      url: result.secure_url,
-      cloudId: result.public_id,
-    };
-  }))
+  let attachments = [];
+  if(req.files.attachments) {
+    attachments = await Promise.all(req.files.attachments.map(async (file) => {
+      // Upload image to cloudinary
+      const result = await cloudinary.uploader.upload(file.path);
+      console.log(result);
+      return {
+        url: result.secure_url,
+        cloudId: result.public_id,
+      };
+    }))
+  }
+
   try {
     var message = await Message.create({
       sender: req.user._id,
