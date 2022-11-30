@@ -6,6 +6,7 @@ const {
   authJWT,
   updateProfile,
   updateStatusMessage,
+  getUserProfile,
 } = require("../controllers/userControllers");
 const { protect } = require("../middleware/authMiddleware");
 
@@ -15,6 +16,7 @@ router.route("/").get(protect, searchUser);
 router.route("/").post(registerUser);
 router.post("/login", authUser);
 router.route("/authJWT").get(protect, authJWT);
+router.route("/profile/:id").get(protect, getUserProfile);
 router.route("/profile").patch(protect, updateProfile);
 router.route("/status").patch(protect, updateStatusMessage);
 

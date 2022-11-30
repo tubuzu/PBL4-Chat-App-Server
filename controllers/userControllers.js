@@ -105,6 +105,14 @@ const authJWT = async (req, res) => {
   return res.json({ userData: req.user, token: token });
 };
 
+//@description     Get or Search all users
+//@route           GET /api/user/profile/:id
+//@access          Public
+const getUserProfile = async (req, res) => {
+  const users = await User.findOne({_id: req.params.id}).select('_id username avatar background about');
+  res.send(users);
+};
+
 //@description     Update profile
 //@route           PATCH /api/user/profile
 //@access          Public
@@ -149,4 +157,4 @@ const updateStatusMessage = async (req, res) => {
   res.status(StatusCodes.OK).send(user);
 };
 
-module.exports = { searchUser, registerUser, authUser, authJWT, updateProfile, updateStatusMessage };
+module.exports = { searchUser, registerUser, authUser, authJWT, updateProfile, getUserProfile, updateStatusMessage };
