@@ -4,6 +4,7 @@ const generateToken = require("../config/generateToken");
 const { BadRequestError } = require("../errors");
 const { StatusCodes } = require("http-status-codes");
 const cloudinary = require("../utils/cloudinary");
+const bcrypt = require("bcryptjs");
 
 //@description     Get or Search all users
 //@route           GET /api/user?search=
@@ -109,7 +110,7 @@ const authJWT = async (req, res) => {
 //@route           GET /api/user/profile/:id
 //@access          Public
 const getUserProfile = async (req, res) => {
-  const users = await User.findOne({_id: req.params.id}).select('_id username avatar background about');
+  const users = await User.findOne({ _id: req.params.id }).select('_id username avatar background about');
   res.send(users);
 };
 
@@ -120,14 +121,14 @@ const updateProfile = async (req, res) => {
   const { about } = req.body;
   let avatar, background;
 
-  if(req.files.avatar) {
+  if (req.files.avatar) {
     const result = await cloudinary.uploader.upload(req.files.avatar[0].path);
     avatar = {
       url: result.secure_url,
       cloudId: result.public_id,
     }
   }
-  if(req.files.background) {
+  if (req.files.background) {
     const result = await cloudinary.uploader.upload(req.files.background[0].path);
     background = {
       url: result.secure_url,
@@ -157,4 +158,25 @@ const updateStatusMessage = async (req, res) => {
   res.status(StatusCodes.OK).send(user);
 };
 
-module.exports = { searchUser, registerUser, authUser, authJWT, updateProfile, getUserProfile, updateStatusMessage };
+//@description     Change account password
+//@route           PATCH /api/user/password
+//@access          Public
+const changePassword = async (req, res) => {
+  const { password, newPassword } = req.body;
+
+  const user = await User.findById(req.user._id);
+
+  if (!(await user.matchPassword(password))) throw new BadRequestError("password does not match");
+
+  if (newPassword) {
+    let updatePassword = newPassword;
+    const salt = await bcrypt.genSalt(10);
+    updatePassword = await bcrypt.hash(updatePassword, salt);
+    await User.findByIdAndUpdate(req.user._id, { password: updatePassword });
+  }
+  else throw new BadRequestError("New password is empty");
+
+  res.status(StatusCodes.OK).send("Successfully chang password!");
+};
+
+module.exports = { searchUser, registerUser, authUser, authJWT, updateProfile, getUserProfile, updateStatusMessage, changePassword };

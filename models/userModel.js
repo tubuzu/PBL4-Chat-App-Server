@@ -35,6 +35,21 @@ userSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, salt);
 });
 
+// userSchema.pre("findByIdAndUpdate", async function (next) {
+//   const password = this.getUpdate().$set.password;
+//   if (!password) {
+//     return next();
+//   }
+
+//   try {
+//     const salt = await bcrypt.genSalt(10);
+//     const hash = await bcrypt.hash(password, salt);
+//     this.update({}, { $set: { password: hash } });
+//   } catch (error) {
+//     return next(error);
+//   }
+// });
+
 const User = mongoose.model("User", userSchema);
 
 module.exports = User;
