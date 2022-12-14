@@ -44,7 +44,7 @@ const sendGroupMessage = asyncHandler(async (req, res) => {
   if (!groupExist) throw new NotFoundError('Group not found!');
 
   let attachments = [];
-  if(req.files.attachments) {
+  if (req.files.attachments) {
     attachments = await Promise.all(req.files.attachments.map(async (file) => {
       // Upload image to cloudinary
       const result = await cloudinary.uploader.upload(file.path);
@@ -64,7 +64,7 @@ const sendGroupMessage = asyncHandler(async (req, res) => {
       group: id,
     });
 
-    const group = await Group.findByIdAndUpdate(id, { $push: { messages: message._id }, latestMessage: message }, { new: true }).populate({ path: "users", select: "-password" }).populate("creator", "-password").populate("owner", "-password");
+    const group = await Group.findByIdAndUpdate(id, { $push: { messages: message._id }, latestMessage: message }, { new: true }).populate({ path: "users", select: "-password" }).populate("creator", "-password").populate("owner", "-password").populate("latestMessage");
 
     const messagePayload = await GroupMessage.findOne({ _id: message._id }).populate("sender", "_id avatar username firstname lastname email");
 
@@ -98,7 +98,7 @@ const forwardGroupMessage = asyncHandler(async (req, res) => {
       group: groupId,
     });
 
-    const group = await Group.findByIdAndUpdate(groupId, { $push: { messages: message._id }, latestMessage: message }, { new: true }).populate({ path: "users", select: "-password" }).populate("creator", "-password").populate("owner", "-password");
+    const group = await Group.findByIdAndUpdate(groupId, { $push: { messages: message._id }, latestMessage: message }, { new: true }).populate({ path: "users", select: "-password" }).populate("creator", "-password").populate("owner", "-password").populate("latestMessage");
 
     const messagePayload = await GroupMessage.findOne({ _id: message._id }).populate("sender", "_id avatar username firstname lastname email");
 

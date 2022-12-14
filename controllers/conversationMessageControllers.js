@@ -65,7 +65,8 @@ const sendConversationMessage = asyncHandler(async (req, res) => {
 
     const conversation = await Conversation.findByIdAndUpdate(id, { $push: { messages: message._id }, latestMessage: message }, { new: true, upsert: true })
       .populate("creator", "-password")
-      .populate("recipient", "-password");
+      .populate("recipient", "-password")
+      .populate("latestMessage");
 
     const messagePayload = await Message.findOne({ _id: message._id }).populate("sender", "_id avatar username firstname lastname email");
 
@@ -108,7 +109,8 @@ const forwardConversationMessage = asyncHandler(async (req, res) => {
 
     const conversation = await Conversation.findByIdAndUpdate(conversationId, { $push: { messages: message._id }, latestMessage: message }, { new: true, upsert: true })
       .populate("creator", "-password")
-      .populate("recipient", "-password");
+      .populate("recipient", "-password")
+      .populate("latestMessage");
 
     const messagePayload = await Message.findOne({ _id: message._id }).populate("sender", "_id avatar username firstname lastname email");
 
