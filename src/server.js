@@ -74,7 +74,7 @@ server.on("listening", () => {
 global.io = socket(server, {
   pingTimeout: 60000,
   cors: {
-    origin: ['https://bkzalo.onrender.com'],
+    origin: 'https://bkzalo.onrender.com',
     credentials: true,
   },
 });
