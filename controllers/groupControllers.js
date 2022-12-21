@@ -85,8 +85,8 @@ const addGroupRecipients = asyncHandler(async (req, res) => {
     const group = await Group.findOne({ _id: groupId })
     if (!group._id) throw new NotFoundError("Group not found!");
 
-    if (group.owner.toString() !== req.user._id.toString())
-        throw new UnauthenticatedError("You are not authenticated to do this action!");
+    // if (group.owner.toString() !== req.user._id.toString())
+    //     throw new UnauthenticatedError("You are not authenticated to do this action!");
 
     recipients.map((user) => {
         if (group.users.includes(user)) throw new BadRequestError("Recipient already in group!");
