@@ -73,11 +73,10 @@ server.on("listening", () => {
 
 global.io = socket(server, {
   pingTimeout: 60000,
-  // cors: {
-  //   // origin: "http://localhost:*",
-  //   origin: ['http://localhost:3000', 'http://localhost:19000', 'http://localhost:19001', 'http://dv-j53.tubuzu.app.exp.direct:80'],
-  //   credentials: true,
-  // },
+  cors: {
+    origin: ['https://bkzalo.onrender.com'],
+    credentials: true,
+  },
 });
 
 const events = require('events');
