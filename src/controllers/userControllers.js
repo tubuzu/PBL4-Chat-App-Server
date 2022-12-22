@@ -166,7 +166,7 @@ const changePassword = async (req, res) => {
 
   const user = await User.findById(req.user._id);
 
-  if (!(await user.matchPassword(password))) throw new BadRequestError("password does not match");
+  if (!(await user.matchPassword(password))) throw new BadRequestError("Password does not match");
 
   if (newPassword) {
     let updatePassword = newPassword;
@@ -176,7 +176,7 @@ const changePassword = async (req, res) => {
   }
   else throw new BadRequestError("New password is empty");
 
-  res.status(StatusCodes.OK).send("Successfully chang password!");
+  res.status(StatusCodes.OK).send("Successfully change password!");
 };
 
 module.exports = { searchUser, registerUser, authUser, authJWT, updateProfile, getUserProfile, updateStatusMessage, changePassword };
