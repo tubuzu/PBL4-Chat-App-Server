@@ -137,9 +137,10 @@ const updateMessageById = asyncHandler(async (req, res) => {
 
     const message = await Message.findByIdAndUpdate(req.params.messageId, { content: req.body.content }, { new: true }).populate("sender", "_id avatar username firstname lastname email").populate("conversation");
 
-    const { recipient } = await Conversation.findOne({ _id: req.params.conversationId });
-    if (!recipient) throw new NotFoundError('ConversationId not found!');
-    WebSockets.onlineUsers.has(recipient.toString()) && global.io.to(WebSockets.onlineUsers.get(recipient.toString())).emit("onMessageUpdate", message);
+    const { creator, recipient } = await Conversation.findOne({ _id: req.params.conversationId });
+    if (!creator || !recipient) throw new NotFoundError('Conversation not found!');
+    const receiver = creator.toString() === req.user._id.toString() ? recipient.toString() : creator.toString();
+    WebSockets.onlineUsers.has(receiver) && global.io.to(WebSockets.onlineUsers.get(receiver)).emit("onMessageUpdate", message);
 
     res.json(message);
   } catch (error) {
@@ -167,8 +168,10 @@ const deleteMessageById = asyncHandler(async (req, res) => {
     if (latestMessage.toString() === message._id.toString())
       await Conversation.findOneAndUpdate({ _id: req.params.conversationId }, { latestMessage: messages[messages.length - 1] })
 
-    const { _id, recipient } = await Conversation.findOne({ _id: req.params.conversationId });
-    WebSockets.onlineUsers.has(recipient.toString()) && global.io.to(WebSockets.onlineUsers.get(recipient.toString())).emit("onMessageDelete", { conversationId: req.params.conversationId, messageId: message._id });
+    const { _id, creator, recipient } = await Conversation.findOne({ _id: req.params.conversationId });
+    if (!_id) throw new NotFoundError('Conversation not found!');
+    const receiver = creator.toString() === req.user._id.toString() ? recipient.toString() : creator.toString();
+    WebSockets.onlineUsers.has(receiver) && global.io.to(WebSockets.onlineUsers.get(receiver)).emit("onMessageDelete", { conversationId: req.params.conversationId, messageId: message._id });
 
     res.json({ conversationId: _id, messageId: message._id });
   } catch (error) {
