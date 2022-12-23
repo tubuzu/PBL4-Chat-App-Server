@@ -58,7 +58,13 @@ const createConversation = async (req, res) => {
                 { recipient: { $eq: req.user._id } },
             ],
         }]
-    });
+    }).populate(
+        "creator",
+        "-password"
+    ).populate(
+        "recipient",
+        "-password"
+    );;
 
     if (isConversation.length) {
         res.status(StatusCodes.OK).json(isConversation[0]);
